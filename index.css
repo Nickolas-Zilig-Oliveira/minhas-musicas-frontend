@@ -14,25 +14,16 @@
   --roxo: #7b2dff;
   --texto: #f2ecff;
   --suave: #a79bc9;
+  --largura: min(380px, 80vw);
   color-scheme: dark;
   scrollbar-color: var(--a1) #0b0716;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
-
 ::selection { background: var(--a1); color: #fff; }
 
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #0b0716; }
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: linear-gradient(var(--a1), var(--roxo), var(--a2));
-  box-shadow: 0 0 12px var(--a1);
-}
-
-/* ---------- céu de estrelas em paralaxe ---------- */
+/* ---------- fundo (tudo estático, para não pesar) ---------- */
 html::before {
   content: "";
   position: fixed;
@@ -50,74 +41,33 @@ html::before {
     radial-gradient(1px 1px at 170px 400px, #fff, transparent);
   background-size: 320px 320px, 320px 320px, 320px 320px, 320px 320px,
                    517px 517px, 517px 517px, 517px 517px, 517px 517px;
-  animation: deriva 140s linear infinite, pisca 3.5s ease-in-out infinite alternate;
+  animation: pisca 4s ease-in-out infinite alternate;
 }
 
-@keyframes deriva {
-  to {
-    background-position: 320px 640px, 320px 640px, 320px 640px, 320px 640px,
-                         517px 1034px, 517px 1034px, 517px 1034px, 517px 1034px;
-  }
-}
+@keyframes pisca { from { opacity: .4; } to { opacity: 1; } }
 
-@keyframes pisca {
-  from { opacity: .35; }
-  to   { opacity: 1; }
-}
-
-/* ---------- granulado de filme + vinheta ---------- */
 html::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .5) 100%),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .5) 100%);
 }
 
 body {
   min-height: 100vh;
   font-family: "Space Grotesk", system-ui, sans-serif;
   color: var(--texto);
-  background: var(--fundo);
+  background:
+    radial-gradient(circle at 18% 22%, rgba(123, 45, 255, .45), transparent 42%),
+    radial-gradient(circle at 85% 18%, rgba(255, 45, 149, .38), transparent 40%),
+    radial-gradient(circle at 72% 88%, rgba(25, 227, 255, .32), transparent 42%),
+    radial-gradient(circle at 12% 88%, rgba(198, 255, 61, .14), transparent 36%),
+    var(--fundo);
+  background-attachment: fixed;
   overflow-x: hidden;
-  position: relative;
 }
-
-/* aurora giratória */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -35%;
-  z-index: -2;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(123, 45, 255, .6), transparent 38%),
-    radial-gradient(circle at 80% 20%, rgba(255, 45, 149, .5), transparent 36%),
-    radial-gradient(circle at 70% 85%, rgba(25, 227, 255, .42), transparent 38%),
-    radial-gradient(circle at 15% 85%, rgba(198, 255, 61, .2), transparent 32%);
-  filter: blur(46px) saturate(1.3);
-  animation: aurora 32s linear infinite;
-}
-
-/* grade em perspectiva */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px) 0 0 / 52px 52px,
-    linear-gradient(90deg, rgba(255, 255, 255, .04) 1px, transparent 1px) 0 0 / 52px 52px,
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, .2) 0 1px, transparent 1px 3px);
-  mask-image: radial-gradient(ellipse at center, #000 25%, transparent 80%);
-  animation: grade 6s linear infinite;
-}
-
-@keyframes aurora { to { transform: rotate(360deg); } }
-@keyframes grade  { to { background-position: 0 52px, 52px 0, 0 3px; } }
 
 /* ---------- topo ---------- */
 header {
@@ -129,11 +79,9 @@ header {
   align-items: center;
   gap: 16px;
   padding: 18px clamp(16px, 5vw, 56px);
-  background: linear-gradient(180deg, rgba(12, 7, 28, .78), rgba(8, 4, 20, .5));
-  backdrop-filter: blur(22px) saturate(1.5);
-  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  background: rgba(10, 5, 24, .92);
   border-bottom: 1px solid rgba(255, 255, 255, .08);
-  box-shadow: 0 14px 50px rgba(0, 0, 0, .45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
 }
 
 header::after {
@@ -143,13 +91,8 @@ header::after {
   right: 0;
   bottom: -1px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--a1), var(--a2), var(--a3), var(--a1), transparent);
-  background-size: 200% 100%;
-  filter: drop-shadow(0 0 6px var(--a1));
-  animation: corre 4s linear infinite;
+  background: linear-gradient(90deg, transparent, var(--a1), var(--a2), var(--a3), transparent);
 }
-
-@keyframes corre { to { background-position: 200% 0; } }
 
 h1 {
   font-family: "Unbounded", sans-serif;
@@ -157,35 +100,15 @@ h1 {
   font-size: clamp(1.2rem, 3.4vw, 2.2rem);
   letter-spacing: -.02em;
   cursor: default;
-  background: linear-gradient(100deg, #fff 0%, var(--a1) 28%, var(--a2) 58%, #fff 90%);
-  background-size: 260% 100%;
+  background: linear-gradient(100deg, #fff 0%, var(--a1) 35%, var(--a2) 70%, #fff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: brilho 6s ease-in-out infinite;
-  filter: drop-shadow(0 0 18px rgba(255, 45, 149, .5));
 }
 
 h1::before {
   content: "♫ ";
   -webkit-text-fill-color: var(--a3);
-  display: inline-block;
-  animation: pulo 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes pulo {
-  from { transform: translateY(0) rotate(-8deg); }
-  to   { transform: translateY(-4px) rotate(8deg); }
-}
-
-h1:hover { animation: brilho 6s ease-in-out infinite, glitch .5s steps(2) infinite; }
-
-@keyframes brilho { 50% { background-position: 100% 0; } }
-
-@keyframes glitch {
-  0%   { filter: drop-shadow(3px 0 var(--a2)) drop-shadow(-3px 0 var(--a1)); }
-  50%  { filter: drop-shadow(-4px 1px var(--a2)) drop-shadow(4px -1px var(--a1)); }
-  100% { filter: drop-shadow(2px -1px var(--a2)) drop-shadow(-2px 1px var(--a1)); }
 }
 
 header a {
@@ -208,8 +131,6 @@ header a::before {
   z-index: -2;
   border-radius: inherit;
   background: conic-gradient(from var(--giro), var(--a1), var(--roxo), var(--a2), var(--a3), var(--a1));
-  animation: giraBorda 2.6s linear infinite;
-  filter: blur(.3px);
 }
 
 header a::after {
@@ -219,142 +140,151 @@ header a::after {
   z-index: -1;
   border-radius: inherit;
   background: rgba(10, 6, 24, .94);
-  transition: background .3s;
 }
 
+/* a borda só gira quando o mouse passa */
 header a:hover {
-  transform: translateY(-2px) scale(1.06);
-  box-shadow: 0 0 30px rgba(255, 45, 149, .65), 0 0 70px rgba(25, 227, 255, .4);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 28px rgba(255, 45, 149, .6), 0 0 60px rgba(25, 227, 255, .35);
 }
 
-header a:hover::after { background: rgba(10, 6, 24, .6); }
+header a:hover::before { animation: giraBorda 2s linear infinite; }
 
 @keyframes giraBorda { to { --giro: 360deg; } }
 
-/* ---------- lista ---------- */
+/* ---------- carrossel ---------- */
 main {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: clamp(28px, 6vw, 60px) 16px 120px;
+  padding: clamp(20px, 5vw, 48px) 0 56px;
 }
 
 #listaMusicas {
+  anchor-name: --carrossel;
   counter-reset: faixa;
   display: flex;
-  flex-direction: column;
-  gap: 26px;
-  perspective: 1400px;
+  gap: 28px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 50px calc(50% - var(--largura) / 2) 40px;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: calc(50% - var(--largura) / 2);
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  perspective: 1200px;
+  scrollbar-width: none;
+  /* bolinhas de navegação (Chrome 135+) */
+  scroll-marker-group: after;
 }
 
-/* título da biblioteca */
-#listaMusicas::before {
-  content: "◉ biblioteca · faixas do banco";
+#listaMusicas::-webkit-scrollbar { display: none; }
+
+/* bolinhas */
+#listaMusicas::scroll-marker-group {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  font: 700 .75rem "Space Grotesk", sans-serif;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--suave);
-  animation: some-entra 1s both;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px;
 }
 
-#listaMusicas::after {
-  content: "■ fim da playlist";
-  align-self: center;
-  margin-top: 8px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  font: 700 .7rem "Space Grotesk", sans-serif;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--suave);
-  border: 1px dashed rgba(255, 255, 255, .2);
-  animation: some-entra 1.4s both;
+/* setas (Chrome 135+) */
+#listaMusicas::scroll-button(left),
+#listaMusicas::scroll-button(right) {
+  position: fixed;
+  position-anchor: --carrossel;
+  top: anchor(center);
+  translate: 0 -50%;
+  z-index: 30;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 50%;
+  font: 700 1.2rem "Space Grotesk", sans-serif;
+  color: #fff;
+  background: rgba(14, 8, 32, .85);
+  box-shadow: 0 0 24px rgba(255, 45, 149, .35);
+  cursor: pointer;
+  transition: transform .2s, background .2s, box-shadow .2s;
 }
 
-@keyframes some-entra { from { opacity: 0; letter-spacing: .8em; } }
+#listaMusicas::scroll-button(left)  { content: "◀" / "Música anterior"; left: calc(anchor(left) + 14px); }
+#listaMusicas::scroll-button(right) { content: "▶" / "Próxima música"; right: calc(anchor(right) + 14px); }
 
-/* ---------- cartão da música ---------- */
+#listaMusicas::scroll-button(left):hover,
+#listaMusicas::scroll-button(right):hover {
+  background: var(--a1);
+  box-shadow: 0 0 34px var(--a1);
+  scale: 1.1;
+}
+
+#listaMusicas::scroll-button(left):disabled,
+#listaMusicas::scroll-button(right):disabled { opacity: .2; cursor: default; }
+
+/* ---------- cartão ---------- */
 .musica {
   counter-increment: faixa;
   --acento: var(--a1);
-  --d: 0s;
   position: relative;
   isolation: isolate;
+  flex: 0 0 var(--largura);
+  min-height: 470px;
+  padding: 262px 26px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   overflow: hidden;
-  padding: 28px 180px 28px 30px;
-  min-height: 176px;
-  border-radius: 26px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  border-radius: 30px;
   border: 2px solid transparent;
   background:
-    linear-gradient(135deg, rgba(24, 13, 48, .9), rgba(9, 5, 20, .94)) padding-box,
-    conic-gradient(from var(--giro), var(--acento), transparent 22%, var(--a2) 48%, transparent 72%, var(--acento)) border-box;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 255, 255, .03);
-  opacity: 0;
-  animation: entra .9s cubic-bezier(.2, .9, .25, 1.1) var(--d) forwards, giraBorda 9s linear infinite;
-  transition: transform .45s cubic-bezier(.2, .9, .25, 1.1), box-shadow .4s, filter .4s;
+    linear-gradient(160deg, rgba(26, 14, 52, .96), rgba(9, 5, 20, .98)) padding-box,
+    conic-gradient(from 200deg, var(--acento), transparent 25%, var(--a2) 50%, transparent 75%, var(--acento)) border-box;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .55);
+  transition: transform .4s cubic-bezier(.2, .9, .25, 1.1), box-shadow .4s;
 }
-
-.musica:nth-child(1) { --d: .05s; }
-.musica:nth-child(2) { --d: .2s; }
-.musica:nth-child(3) { --d: .35s; }
-.musica:nth-child(4) { --d: .5s; }
-.musica:nth-child(5) { --d: .65s; }
-.musica:nth-child(n+6) { --d: .8s; }
 
 .musica:nth-child(3n+2) { --acento: var(--a2); }
 .musica:nth-child(3n+3) { --acento: var(--a3); }
 
-@keyframes entra {
-  from { opacity: 0; translate: 0 50px; scale: .94; filter: blur(14px); }
-  to   { opacity: 1; translate: 0 0; scale: 1; filter: blur(0); }
-}
-
 .musica:hover {
-  transform: translateY(-10px) rotateX(3deg) rotateY(-4deg) scale(1.02);
-  animation-duration: .9s, 2.5s;
-  box-shadow: 0 40px 90px rgba(0, 0, 0, .7), 0 0 60px color-mix(in srgb, var(--acento) 50%, transparent);
+  transform: translateY(-10px);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, .65), 0 0 50px color-mix(in srgb, var(--acento) 45%, transparent);
 }
 
-/* número gigante */
+/* número gigante ao fundo */
 .musica::before {
   content: counter(faixa, decimal-leading-zero);
   position: absolute;
   z-index: -1;
-  right: 130px;
-  bottom: -30px;
+  right: 14px;
+  bottom: -22px;
   font-family: "Unbounded", sans-serif;
   font-weight: 800;
-  font-size: 8rem;
+  font-size: 7rem;
   line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--acento) 50%, transparent);
-  opacity: .45;
-  transition: opacity .4s, transform .5s cubic-bezier(.2, .9, .25, 1.1);
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--acento) 45%, transparent);
+  opacity: .5;
 }
 
-.musica:hover::before {
-  opacity: 1;
-  transform: translateX(-16px) scale(1.06);
-}
-
-/* vinil realista */
+/* vinil grande no topo */
 .musica::after {
   content: "";
   position: absolute;
   z-index: -1;
-  right: -48px;
-  top: 50%;
-  width: 190px;
-  height: 190px;
-  margin-top: -95px;
+  top: 34px;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  margin-left: -100px;
   border-radius: 50%;
   background:
-    radial-gradient(circle, var(--fundo) 0 5px, var(--acento) 6px 31px, #120c20 32px 34px, transparent 35px),
+    radial-gradient(circle, var(--fundo) 0 5px, var(--acento) 6px 34px, #120c20 35px 37px, transparent 38px),
     conic-gradient(from 0deg, transparent 0 18%, rgba(255, 255, 255, .22) 24%, transparent 30% 68%, rgba(255, 255, 255, .22) 74%, transparent 80%),
     repeating-radial-gradient(circle, #0b0716 0 1.5px, #1d1533 2.5px 3.5px);
-  box-shadow: 0 0 50px color-mix(in srgb, var(--acento) 45%, transparent), inset 0 0 0 3px rgba(255, 255, 255, .06);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--acento) 50%, transparent), inset 0 0 0 3px rgba(255, 255, 255, .06);
   animation: gira 6s linear infinite paused;
 }
 
@@ -366,109 +296,68 @@ main {
 .musica h2 {
   font-family: "Unbounded", sans-serif;
   font-weight: 800;
-  font-size: clamp(1.15rem, 2.6vw, 1.6rem);
-  line-height: 1.15;
-  letter-spacing: -.01em;
+  font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+  line-height: 1.2;
   margin-bottom: 10px;
   color: #fff;
-  text-shadow: 0 0 26px color-mix(in srgb, var(--acento) 75%, transparent);
-}
-
-.musica h2::before {
-  content: "▶";
-  display: inline-block;
-  width: 0;
-  margin-right: 0;
-  overflow: hidden;
-  vertical-align: middle;
-  font-size: .6em;
-  color: var(--acento);
-  opacity: 0;
-  transition: width .35s, margin .35s, opacity .35s;
-}
-
-.musica:hover h2::before {
-  width: .9em;
-  margin-right: .35em;
-  opacity: 1;
+  text-shadow: 0 0 22px color-mix(in srgb, var(--acento) 70%, transparent);
 }
 
 .artista {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-weight: 700;
-  font-size: 1.04rem;
+  font-size: 1.02rem;
   color: var(--acento);
 }
 
-.artista::before {
-  content: "● ";
-  font-size: .65em;
-  vertical-align: .14em;
-}
-
-.artista::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 0;
-  height: 2px;
-  background: var(--acento);
-  box-shadow: 0 0 10px var(--acento);
-  transition: width .5s cubic-bezier(.2, .9, .25, 1);
-}
-
-.musica:hover .artista::after { width: 100%; }
+.artista::before { content: "● "; font-size: .65em; vertical-align: .14em; }
 
 .detalhes {
-  display: block;
   width: fit-content;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   padding: 7px 16px;
   border-radius: 999px;
-  font-size: .8rem;
+  font-size: .78rem;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--suave);
   background: rgba(0, 0, 0, .4);
   border: 1px solid rgba(255, 255, 255, .1);
-  box-shadow: inset 0 0 14px rgba(0, 0, 0, .5);
 }
 
 /* ---------- botões + equalizador ---------- */
 .acoes {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 10px;
+  margin-top: auto;
 }
 
 .acoes::after {
   content: "";
-  margin-left: 16px;
-  width: 64px;
-  height: 30px;
+  flex-basis: 100%;
+  height: 28px;
+  margin-top: 10px;
   background:
-    linear-gradient(var(--acento), var(--acento)) 0 100% / 6px 30% no-repeat,
-    linear-gradient(var(--acento), var(--acento)) 10px 100% / 6px 70% no-repeat,
-    linear-gradient(var(--acento), var(--acento)) 20px 100% / 6px 45% no-repeat,
-    linear-gradient(var(--acento), var(--acento)) 30px 100% / 6px 90% no-repeat,
-    linear-gradient(var(--acento), var(--acento)) 40px 100% / 6px 55% no-repeat,
-    linear-gradient(var(--acento), var(--acento)) 50px 100% / 6px 75% no-repeat,
-    linear-gradient(var(--acento), var(--acento)) 60px 100% / 4px 40% no-repeat;
-  filter: drop-shadow(0 0 6px var(--acento));
-  animation: eq 1s ease-in-out infinite alternate;
-  opacity: .85;
+    linear-gradient(var(--acento), var(--acento)) calc(50% - 30px) 100% / 6px 30% no-repeat,
+    linear-gradient(var(--acento), var(--acento)) calc(50% - 20px) 100% / 6px 70% no-repeat,
+    linear-gradient(var(--acento), var(--acento)) calc(50% - 10px) 100% / 6px 45% no-repeat,
+    linear-gradient(var(--acento), var(--acento)) 50% 100% / 6px 90% no-repeat,
+    linear-gradient(var(--acento), var(--acento)) calc(50% + 10px) 100% / 6px 55% no-repeat,
+    linear-gradient(var(--acento), var(--acento)) calc(50% + 20px) 100% / 6px 75% no-repeat,
+    linear-gradient(var(--acento), var(--acento)) calc(50% + 30px) 100% / 6px 40% no-repeat;
+  opacity: .8;
+  animation: eq .8s ease-in-out infinite alternate paused;
 }
 
-.musica:hover .acoes::after { animation-duration: .45s; opacity: 1; }
+.musica:hover .acoes::after { animation-play-state: running; opacity: 1; }
 
 @keyframes eq {
-  0%   { background-size: 6px 30%, 6px 70%, 6px 45%, 6px 90%, 6px 55%, 6px 75%, 4px 40%; }
-  33%  { background-size: 6px 85%, 6px 35%, 6px 95%, 6px 40%, 6px 90%, 6px 30%, 4px 80%; }
-  66%  { background-size: 6px 50%, 6px 90%, 6px 30%, 6px 75%, 6px 35%, 6px 95%, 4px 55%; }
-  100% { background-size: 6px 95%, 6px 45%, 6px 70%, 6px 30%, 6px 80%, 6px 50%, 4px 90%; }
+  0%   { background-size: 6px 30%, 6px 70%, 6px 45%, 6px 90%, 6px 55%, 6px 75%, 6px 40%; }
+  50%  { background-size: 6px 85%, 6px 35%, 6px 95%, 6px 40%, 6px 90%, 6px 30%, 6px 80%; }
+  100% { background-size: 6px 55%, 6px 95%, 6px 30%, 6px 75%, 6px 35%, 6px 95%, 6px 55%; }
 }
 
 .editar,
@@ -481,7 +370,7 @@ main {
   font: 700 .88rem "Space Grotesk", sans-serif;
   text-decoration: none;
   cursor: pointer;
-  transition: transform .2s, box-shadow .25s, background .25s, color .25s;
+  transition: transform .2s, box-shadow .25s, background .25s;
 }
 
 .editar {
@@ -496,132 +385,50 @@ main {
   border-color: rgba(255, 45, 149, .55);
 }
 
-.editar::before,
-.apagar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(115deg, rgba(255, 255, 255, .1) 0 2px, transparent 2px 9px);
-  opacity: 0;
-  transition: opacity .3s;
-}
-
-.editar:hover::before,
-.apagar:hover::before { opacity: 1; }
-
-.editar::after,
-.apagar::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -80%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .55), transparent);
-  transform: skewX(-20deg);
-  transition: left .6s;
-}
-
-.editar:hover::after,
-.apagar:hover::after { left: 140%; }
-
-.editar:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(25, 227, 255, .6);
-}
+.editar:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(25, 227, 255, .55); }
 
 .apagar:hover {
   transform: translateY(-3px);
   background: var(--a1);
   color: #fff;
-  box-shadow: 0 12px 32px rgba(255, 45, 149, .65);
+  box-shadow: 0 12px 30px rgba(255, 45, 149, .6);
 }
 
 .editar:active,
 .apagar:active { transform: scale(.94); }
 
-/* ---------- barra de player no rodapé ---------- */
-main::before {
-  content: "▶  TOCANDO AGORA   ✦   MINHAS MÚSICAS   ✦   SERTANEJO   ✦   BOSSA NOVA   ✦   ROCK   ✦   MYSQL + NODE + VERCEL   ✦   ♫ ♪ ♫   ✦   TOCANDO AGORA   ✦   MINHAS MÚSICAS   ✦   SERTANEJO   ✦   BOSSA NOVA   ✦   ROCK";
-  position: fixed;
-  z-index: 20;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 38px;
-  line-height: 38px;
-  white-space: pre;
-  overflow: hidden;
-  font: 700 .72rem "Space Grotesk", sans-serif;
-  letter-spacing: .28em;
-  color: var(--suave);
-  background: linear-gradient(90deg, rgba(10, 5, 24, .92), rgba(24, 10, 44, .92));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid rgba(255, 255, 255, .1);
-  animation: ticker 55s linear infinite;
-}
-
-main::after {
+/* ---------- bolinhas: uma por música ---------- */
+.musica::scroll-marker {
   content: "";
-  position: fixed;
-  z-index: 21;
-  left: 0;
-  bottom: 37px;
-  height: 3px;
-  width: 100%;
-  background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3));
-  box-shadow: 0 0 14px var(--a2), 0 0 30px var(--a1);
-  transform-origin: left;
-  animation: progresso 24s linear infinite;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .25);
+  transition: width .3s, background .3s, box-shadow .3s;
 }
 
-@keyframes ticker { from { text-indent: 100vw; } to { text-indent: -3200px; } }
-@keyframes progresso { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.musica::scroll-marker:target-current {
+  width: 34px;
+  border-radius: 999px;
+  background: var(--acento);
+  box-shadow: 0 0 14px var(--acento);
+}
 
-/* ---------- animações presas ao scroll (Chrome/Edge) ---------- */
+/* ---------- efeito "coverflow" preso ao scroll (Chrome/Edge) ---------- */
 @supports (animation-timeline: view()) {
   .musica {
-    animation:
-      entra .9s cubic-bezier(.2, .9, .25, 1.1) var(--d) forwards,
-      giraBorda 9s linear infinite,
-      revela linear both;
-    animation-timeline: auto, auto, view();
-    animation-range: normal, normal, entry 0% entry 80%;
+    animation: coverflow linear both;
+    animation-timeline: view(inline);
+    animation-range: cover;
   }
-
-  .musica:hover { animation-duration: .9s, 2.5s, auto; }
-
-  .musica::after {
-    animation: gira 6s linear infinite paused, giraScroll linear both;
-    animation-timeline: auto, view();
-    animation-range: normal, cover;
-  }
-
-  .musica:hover::after { animation-play-state: running, running; }
 }
 
-@keyframes revela {
-  from { translate: 0 90px; scale: .9; rotate: 1 0 0 16deg; }
-  to   { translate: 0 0;    scale: 1;  rotate: 1 0 0 0deg; }
-}
-
-@keyframes giraScroll {
-  from { rotate: 0deg; }
-  to   { rotate: 540deg; }
-}
-
-/* ---------- celular ---------- */
-@media (max-width: 640px) {
-  header { flex-direction: column; align-items: flex-start; }
-  .musica { padding: 24px 20px; }
-  .musica::after { right: -90px; opacity: .5; }
-  .musica::before { right: 14px; font-size: 5rem; }
-  .acoes::after { display: none; }
-  main::before { letter-spacing: .18em; }
+@keyframes coverflow {
+  0%   { scale: .78; opacity: .35; rotate: 0 1 0 38deg; }
+  50%  { scale: 1;   opacity: 1;   rotate: 0 1 0 0deg; }
+  100% { scale: .78; opacity: .35; rotate: 0 1 0 -38deg; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  .musica { opacity: 1; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
