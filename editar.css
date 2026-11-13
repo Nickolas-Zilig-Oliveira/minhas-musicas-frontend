@@ -1,8 +1,251 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Unbounded:wght@500;800&display=swap");
+
+@property --giro {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+:root {
+  --fundo: #07050f;
+  --a1: #ff9d1c;
+  --a2: #ff4d4d;
+  --a3: #ffd93d;
+  --texto: #f2ecff;
+  --suave: #a79bc9;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: Arial, sans-serif; background: #f4f4f8; color: #222; }
-main { max-width: 480px; margin: 32px auto; padding: 24px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); display: flex; flex-direction: column; gap: 8px; }
-.voltar { color: #6c3fc5; text-decoration: none; margin-bottom: 8px; }
-h1 { color: #6c3fc5; margin-bottom: 8px; }
-label { font-weight: bold; margin-top: 8px; }
-input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
-button { margin-top: 16px; padding: 12px; background: #6c3fc5; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  color: var(--texto);
+  background: var(--fundo);
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -30%;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--a1) 55%, transparent), transparent 40%),
+    radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--a2) 45%, transparent), transparent 38%),
+    radial-gradient(circle at 70% 85%, color-mix(in srgb, var(--a3) 40%, transparent), transparent 40%);
+  filter: blur(40px);
+  animation: aurora 28s linear infinite;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px) 0 0 / 48px 48px,
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 85%);
+}
+
+@keyframes aurora {
+  to { transform: rotate(360deg); }
+}
+
+main {
+  position: relative;
+  isolation: isolate;
+  width: min(520px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 38px 34px 34px;
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, .02));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .18);
+  animation: sobe .9s cubic-bezier(.2, .9, .25, 1.1) both;
+}
+
+@keyframes sobe {
+  from { opacity: 0; transform: translateY(50px) scale(.95); }
+}
+
+/* borda neon giratória */
+main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--giro), var(--a1), var(--a2), var(--a3), var(--a1));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: giraBorda 5s linear infinite;
+}
+
+@keyframes giraBorda {
+  to { --giro: 360deg; }
+}
+
+/* vinil decorativo no canto */
+main::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -70px;
+  top: -70px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--fundo) 0 5px, var(--a1) 6px 30px, #151022 31px 33px, transparent 34px),
+    repeating-radial-gradient(circle, #0d0918 0 2px, #1c1430 3px 4px);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--a1) 50%, transparent);
+  animation: gira 9s linear infinite;
+}
+
+@keyframes gira {
+  to { transform: rotate(360deg); }
+}
+
+.voltar {
+  width: fit-content;
+  margin-bottom: 14px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--suave);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(0, 0, 0, .3);
+  transition: color .25s, border-color .25s, transform .25s, box-shadow .25s;
+}
+
+.voltar::before { content: "← "; }
+
+.voltar:hover {
+  color: #fff;
+  border-color: var(--a2);
+  transform: translateX(-4px);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--a2) 50%, transparent);
+}
+
+h1 {
+  margin-bottom: 14px;
+  font-family: "Unbounded", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  letter-spacing: -.02em;
+  background: linear-gradient(100deg, #fff 0%, var(--a1) 35%, var(--a2) 65%, #fff 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: brilho 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--a1) 55%, transparent));
+}
+
+@keyframes brilho {
+  50% { background-position: 100% 0; }
+}
+
+label {
+  margin-top: 10px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--suave);
+  transition: color .25s;
+}
+
+label:has(+ input:focus) {
+  color: var(--a2);
+}
+
+input {
+  width: 100%;
+  padding: 15px 18px;
+  font: 500 1rem "Space Grotesk", sans-serif;
+  color: #fff;
+  background: rgba(0, 0, 0, .38);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 14px;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s, background .25s, transform .25s;
+}
+
+input:hover {
+  border-color: rgba(255, 255, 255, .28);
+}
+
+input:focus {
+  border-color: var(--a2);
+  background: rgba(0, 0, 0, .55);
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--a2) 22%, transparent), 0 0 30px color-mix(in srgb, var(--a2) 35%, transparent);
+}
+
+input::-webkit-inner-spin-button { opacity: .4; }
+
+button {
+  position: relative;
+  overflow: hidden;
+  margin-top: 26px;
+  padding: 17px;
+  font: 800 1rem "Unbounded", sans-serif;
+  letter-spacing: .02em;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  background: linear-gradient(120deg, var(--a1), var(--a2), var(--a3), var(--a1));
+  background-size: 300% 100%;
+  box-shadow: 0 14px 40px color-mix(in srgb, var(--a1) 45%, transparent);
+  animation: fluxo 6s linear infinite;
+  transition: transform .2s, box-shadow .25s;
+}
+
+@keyframes fluxo {
+  to { background-position: 300% 0; }
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .55), transparent);
+  transform: skewX(-20deg);
+  transition: left .7s;
+}
+
+button:hover {
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: 0 20px 50px color-mix(in srgb, var(--a1) 65%, transparent);
+}
+
+button:hover::after { left: 140%; }
+button:active { transform: scale(.97); }
+
+@media (max-width: 480px) {
+  main { padding: 30px 20px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
