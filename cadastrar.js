@@ -5,6 +5,7 @@ const inputArtista = document.getElementById("artista")
 const inputGenero = document.getElementById("genero")
 const inputAno = document.getElementById("ano")
 const inputDuracao = document.getElementById("duracao")
+const inputSpotify = document.getElementById("spotify")
 
 const botaoCadastrar = document.getElementById("botaoCadastrar")
 
@@ -27,7 +28,8 @@ titulo: inputTitulo.value,
 artista: inputArtista.value,
 genero: inputGenero.value,
 ano: inputAno.valueAsNumber,
-duracao: inputDuracao.valueAsNumber
+duracao: inputDuracao.valueAsNumber,
+spotify: inputSpotify.value
 }
 
 const resposta = await fetch(`${urlBackend}/cadastrar`, {

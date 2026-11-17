@@ -13,6 +13,7 @@ listaMusicas.innerHTML += `
 <p class="artista">${musica.artista}</p>
 <p class="detalhes">${musica.genero} | ${musica.ano} | ${musica.duracao} min</p>
 <div class="acoes">
+<button class="tocar" onclick="tocarMusica('${musica.spotify}')">▶ Tocar</button>
 <a class="editar" href="editar.html?id=${musica.id}">Editar</a>
 <button class="apagar" onclick="apagarMusica(${musica.id})">Apagar</button>
 </div>
@@ -40,3 +41,50 @@ alert(respostaTransformada.mensagem)
 
 window.location.reload()
 }
+
+const player = document.getElementById("player")
+const botaoFecharPlayer = document.getElementById("fecharPlayer")
+
+let apiSpotify = null
+let controladorSpotify = null
+
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+apiSpotify = IFrameAPI
+}
+
+function tocarMusica(link) {
+if (!link || link === "null" || !link.includes("/track/")) {
+alert("Essa música não tem link do Spotify.")
+return
+}
+
+if (!apiSpotify) {
+alert("O player do Spotify ainda está carregando, tente de novo.")
+return
+}
+
+const uri = "spotify:track:" + link.split("/track/")[1].split("?")[0]
+
+player.classList.add("aberto")
+
+if (controladorSpotify) {
+controladorSpotify.loadUri(uri)
+controladorSpotify.play()
+return
+}
+
+apiSpotify.createController(document.getElementById("playerSpotify"), { uri: uri, width: "100%", height: 152 }, (controlador) => {
+controladorSpotify = controlador
+controlador.addListener("ready", () => {
+controlador.play()
+})
+})
+}
+
+botaoFecharPlayer.addEventListener("click", () => {
+if (controladorSpotify) {
+controladorSpotify.pause()
+}
+
+player.classList.remove("aberto")
+})

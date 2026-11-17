@@ -373,3 +373,64 @@ main { padding: 8px 0 48px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- botão tocar + player do Spotify ---------- */
+.tocar {
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: none;
+  font: 800 .88rem var(--sans);
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(120deg, var(--c1), var(--c2));
+  transition: transform .25s, filter .25s;
+}
+
+.tocar:hover { transform: translateY(-2px); filter: brightness(1.12); }
+.tocar:active { transform: scale(.95); }
+
+.editar,
+.apagar { padding: 12px 20px; }
+
+#player {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 40;
+  width: min(640px, 94vw);
+  padding: 12px;
+  border-radius: 24px;
+  background: rgba(18, 16, 30, .94);
+  border: 1px solid rgba(255, 255, 255, .14);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .65);
+  translate: -50% 150%;
+  opacity: 0;
+  pointer-events: none;
+  transition: translate .6s cubic-bezier(.2, .8, .2, 1), opacity .4s;
+}
+
+#player.aberto {
+  translate: -50% 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#player iframe {
+  display: block;
+  border-radius: 14px;
+  color-scheme: light;
+}
+
+#fecharPlayer {
+  position: absolute;
+  top: -14px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  font: 800 1rem/1 var(--sans);
+  color: var(--fundo);
+  background: #fff;
+  cursor: pointer;
+}
