@@ -1,4 +1,4 @@
-const urlBackend = "https://musicas-backend-livid.vercel.app"
+const urlBackend = "https://minhas-musicas-backend-eta.vercel.app"
 
 const parametros = new URLSearchParams(window.location.search)
 const id = parametros.get("id")
