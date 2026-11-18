@@ -78,6 +78,9 @@ controladorSpotify = controlador
 controlador.addListener("ready", () => {
 controlador.play()
 })
+controlador.addListener("playback_update", (evento) => {
+window.musicaTocando = !evento.data.isPaused
+})
 })
 }
 
@@ -87,4 +90,21 @@ controladorSpotify.pause()
 }
 
 player.classList.remove("aberto")
+window.musicaTocando = false
+})
+
+document.addEventListener("keydown", (evento) => {
+if (evento.target.tagName === "INPUT") {
+return
+}
+
+const passo = listaMusicas.firstElementChild ? listaMusicas.firstElementChild.offsetWidth + 34 : 400
+
+if (evento.key === "ArrowRight") {
+listaMusicas.scrollBy({ left: passo, behavior: "smooth" })
+}
+
+if (evento.key === "ArrowLeft") {
+listaMusicas.scrollBy({ left: -passo, behavior: "smooth" })
+}
 })
