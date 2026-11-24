@@ -192,17 +192,19 @@ if (!controladorSpotify) {
 return
 }
 
-tentativas++
-
+/* antes do primeiro clique o navegador não deixa: não adianta gastar tentativas */
 if (navigator.userActivation && !navigator.userActivation.hasBeenActive) {
 mostrarAviso("🔊 Clique em qualquer lugar para ligar o som")
+return
 }
 
-if (tentativas === 1 || tentativas === 3) {
-darPlay()
-} else if (tentativas === 2) {
+tentativas++
+
+if (tentativas === 3) {
 /* um player novo destrava quando o Spotify fica preso */
 criarPlayer(uriNoPlayer)
+} else if (tentativas < 7) {
+darPlay()
 } else {
 mostrarAviso("▶ Toque no play do player aqui embaixo")
 clearInterval(vigia)
