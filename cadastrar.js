@@ -9,6 +9,8 @@ const inputSpotify = document.getElementById("spotify")
 
 const botaoCadastrar = document.getElementById("botaoCadastrar")
 
+inputSpotify.addEventListener("input", () => mostrarCapaNoFundo(inputSpotify.value))
+
 botaoCadastrar.addEventListener("click", cadastrarMusica)
 
 async function cadastrarMusica() {

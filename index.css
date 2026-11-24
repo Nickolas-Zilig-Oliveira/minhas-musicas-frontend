@@ -8,7 +8,7 @@
   --c2: #7a5cff;
   --c3: #ffb86b;
   --largura: min(420px, 86vw);
-  --capa: min(310px, 36vh);
+  --capa: min(clamp(180px, calc(100vh - 520px), 340px), 62vw);
   --serif: "Gloock", Georgia, serif;
   --sans: "Manrope", system-ui, sans-serif;
   --mx: 0;
@@ -62,7 +62,7 @@ header {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 26px clamp(20px, 5vw, 64px) 0;
+  padding: 18px clamp(20px, 5vw, 64px) 0;
 }
 
 h1 {
@@ -104,7 +104,7 @@ header a:hover {
 }
 
 /* ---------- carrossel ---------- */
-main { padding: 4px 0 60px; }
+main { padding: 4px 0 130px; }
 
 #listaMusicas {
   anchor-name: --carrossel;
@@ -113,7 +113,7 @@ main { padding: 4px 0 60px; }
   gap: 34px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 44px calc(50% - var(--largura) / 2) 26px;
+  padding: 28px calc(50% - var(--largura) / 2) 18px;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: calc(50% - var(--largura) / 2);
   scroll-behavior: smooth;
@@ -174,7 +174,7 @@ main { padding: 4px 0 60px; }
   position: relative;
   isolation: isolate;
   flex: 0 0 var(--largura);
-  padding: calc(var(--capa) + 64px) 6px 20px;
+  padding: calc(var(--capa) + 46px) 6px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -188,7 +188,7 @@ main { padding: 4px 0 60px; }
   content: counter(faixa, decimal-leading-zero);
   position: absolute;
   z-index: 1;
-  top: 24px;
+  top: 12px;
   left: 50%;
   width: var(--capa);
   height: var(--capa);
@@ -219,7 +219,7 @@ main { padding: 4px 0 60px; }
   content: "";
   position: absolute;
   z-index: 0;
-  top: 44px;
+  top: calc(12px + var(--capa) * .065);
   left: 50%;
   width: calc(var(--capa) * .87);
   height: calc(var(--capa) * .87);
@@ -246,7 +246,7 @@ main { padding: 4px 0 60px; }
 .musica h2 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(2.2rem, min(7.4vw, 6.8vh), 3.9rem);
+  font-size: clamp(1.9rem, min(7.4vw, 5.8vh), 3.9rem);
   line-height: .95;
   letter-spacing: -.01em;
   text-wrap: balance;
@@ -264,7 +264,7 @@ main { padding: 4px 0 60px; }
 }
 
 .detalhes {
-  margin-bottom: 26px;
+  margin-bottom: 16px;
   padding: 8px 18px;
   border-radius: 999px;
   font-size: .82rem;
@@ -408,4 +408,84 @@ main { padding: 4px 0 60px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- capa de verdade do álbum ---------- */
+.musica.com-capa::before {
+  content: "";
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, .2), transparent 30%),
+    var(--arte) center / cover no-repeat,
+    var(--c2);
+}
+
+/* a música aberta (no centro) ganha um brilho da cor da capa */
+.musica.central::before {
+  box-shadow:
+    0 40px 90px rgba(0, 0, 0, .55),
+    0 0 110px color-mix(in srgb, var(--c1) 55%, transparent),
+    inset 0 0 0 1px rgba(255, 255, 255, .25);
+}
+
+.musica.central::after { translate: 84px 0; }
+
+/* tocando: o vinil sai e gira, a capa respira */
+body.tocando .musica.central::before { animation: respira 2.6s ease-in-out infinite alternate; }
+
+body.tocando .musica.central::after {
+  translate: 104px 0;
+  animation-play-state: running;
+}
+
+@keyframes respira { to { scale: 1.035; } }
+
+/* ---------- aviso de som + player compacto ---------- */
+#avisoSom {
+  position: fixed;
+  left: 50%;
+  top: 18px;
+  z-index: 45;
+  translate: -50% -12px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font: 800 .9rem var(--sans);
+  white-space: nowrap;
+  color: var(--fundo);
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s, translate .5s cubic-bezier(.2, .8, .2, 1);
+}
+
+#avisoSom.visivel {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+#player {
+  padding: 8px;
+  border-radius: 20px;
+}
+
+@media (max-width: 560px) {
+  #avisoSom { top: 68px; font-size: .8rem; }
+}
+
+/* o texto fica acima da sombra da capa */
+.musica h2,
+.artista,
+.detalhes,
+.acoes {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------- celular: sem setas (arrasta com o dedo) ---------- */
+@media (max-width: 560px) {
+  h1 { font-size: 1.55rem; white-space: nowrap; }
+  header { padding-inline: 14px; gap: 10px; }
+  header a { font-size: .78rem; padding: 10px 14px; }
+  #listaMusicas::scroll-button(left),
+  #listaMusicas::scroll-button(right) { display: none; }
 }

@@ -12,6 +12,8 @@ const inputSpotify = document.getElementById("spotify")
 
 const botaoSalvar = document.getElementById("botaoSalvar")
 
+inputSpotify.addEventListener("input", () => mostrarCapaNoFundo(inputSpotify.value))
+
 async function buscarMusica() {
 const resposta = await fetch(`${urlBackend}/musica/${id}`)
 const musica = await resposta.json()
@@ -22,6 +24,7 @@ inputGenero.value = musica.genero
 inputAno.value = musica.ano
 inputDuracao.value = musica.duracao
 inputSpotify.value = musica.spotify || ""
+mostrarCapaNoFundo(inputSpotify.value)
 }
 
 buscarMusica()
