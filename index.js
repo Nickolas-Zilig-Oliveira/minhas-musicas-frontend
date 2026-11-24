@@ -55,9 +55,11 @@ let controladorSpotify = null
 let numeroDoPlayer = 0
 
 let tocarSozinho = true
-let somLiberado = false
-let tocando = false
 let posicao = 0
+let duracao = 0
+let ultimoAvanco = 0
+let ultimaTentativa = 0
+let vigia = null
 
 let uriDesejada = null
 let uriNoPlayer = null
@@ -143,18 +145,69 @@ return
 }
 
 uriDesejada = null
+clearInterval(vigia)
 
 if (controladorSpotify) {
 controladorSpotify.pause()
 }
 }
 
-function retomar() {
-if (posicao > 0) {
+/* "tocando" só vale quando o tempo da música está andando de verdade:
+o Spotify avisa que está tocando mesmo quando o navegador bloqueou o som */
+function estaTocando() {
+return Date.now() - ultimoAvanco < 2000
+}
+
+function darPlay() {
+ultimaTentativa = Date.now()
+
+if (posicao > 0 && posicao < duracao - 1000) {
 controladorSpotify.resume()
 } else {
 controladorSpotify.play()
 }
+}
+
+function mostrarAviso(texto) {
+avisoSom.textContent = texto
+avisoSom.classList.add("visivel")
+}
+
+function esconderAviso() {
+avisoSom.classList.remove("visivel")
+}
+
+/* depois de pedir uma música, confere se ela começou; se não, tenta de novo */
+function vigiar() {
+clearInterval(vigia)
+let tentativas = 0
+
+vigia = setInterval(() => {
+if (!tocarSozinho || estaTocando()) {
+clearInterval(vigia)
+return
+}
+
+if (!controladorSpotify) {
+return
+}
+
+tentativas++
+
+if (navigator.userActivation && !navigator.userActivation.hasBeenActive) {
+mostrarAviso("🔊 Clique em qualquer lugar para ligar o som")
+}
+
+if (tentativas === 1 || tentativas === 3) {
+darPlay()
+} else if (tentativas === 2) {
+/* um player novo destrava quando o Spotify fica preso */
+criarPlayer(uriNoPlayer)
+} else {
+mostrarAviso("▶ Toque no play do player aqui embaixo")
+clearInterval(vigia)
+}
+}, 2500)
 }
 
 function abrirNoPlayer(uri) {
@@ -167,31 +220,52 @@ return
 player.classList.add("aberto")
 
 if (uri !== uriNoPlayer) {
-criarPlayer(uri)
-} else if (controladorSpotify && !tocando) {
-retomar()
-}
+trocarFaixa(uri)
+} else if (controladorSpotify && !estaTocando()) {
+darPlay()
 }
 
-/* um player novo a cada música: reaproveitar o antigo faz o Spotify pausar e mostrar anúncio */
+vigiar()
+}
+
+function zerarFaixa(uri) {
+uriNoPlayer = uri
+posicao = 0
+duracao = 0
+ultimoAvanco = 0
+marcarTocando(false)
+}
+
+function marcarTocando(valor) {
+window.musicaTocando = valor
+document.body.classList.toggle("tocando", valor)
+}
+
+function trocarFaixa(uri) {
+if (!controladorSpotify) {
+criarPlayer(uri)
+return
+}
+
+zerarFaixa(uri)
+controladorSpotify.loadUri(uri)
+controladorSpotify.play()
+}
+
 function criarPlayer(uri) {
 if (controladorSpotify) {
 controladorSpotify.destroy()
 controladorSpotify = null
 }
 
-uriNoPlayer = uri
-posicao = 0
-tocando = false
-window.musicaTocando = false
-document.body.classList.remove("tocando")
+zerarFaixa(uri)
 
 const numero = ++numeroDoPlayer
 const alvo = document.createElement("div")
 caixaDoPlayer.replaceChildren(alvo)
 
 apiSpotify.createController(alvo, { uri: uri, width: "100%", height: 80 }, (controlador) => {
-/* a pessoa já passou para outra música enquanto este carregava */
+/* já foi pedido outro player enquanto este carregava */
 if (numero !== numeroDoPlayer) {
 controlador.destroy()
 return
@@ -200,7 +274,7 @@ return
 controladorSpotify = controlador
 
 controlador.addListener("ready", () => {
-if (tocarSozinho && numero === numeroDoPlayer) {
+if (tocarSozinho && numero === numeroDoPlayer && !estaTocando()) {
 controlador.play()
 }
 })
@@ -210,23 +284,19 @@ if (numero !== numeroDoPlayer) {
 return
 }
 
-tocando = !evento.data.isPaused
-posicao = evento.data.position
-window.musicaTocando = tocando
-document.body.classList.toggle("tocando", tocando)
+const { isPaused, isBuffering, position, duration } = evento.data
 
-if (tocando) {
-somLiberado = true
-avisoSom.classList.remove("visivel")
+if (isPaused) {
+ultimoAvanco = 0
+} else if (!isBuffering && position > 0 && position !== posicao) {
+ultimoAvanco = Date.now()
+esconderAviso()
 }
+
+posicao = position
+duracao = duration
+marcarTocando(estaTocando())
 })
-
-/* se o navegador segurou o som, avisa que falta um clique */
-setTimeout(() => {
-if (!somLiberado && tocarSozinho) {
-avisoSom.classList.add("visivel")
-}
-}, 3500)
 })
 }
 
@@ -250,21 +320,30 @@ tocarSozinho = true
 abrirNoPlayer(uri)
 }
 
-/* navegadores só liberam som depois da primeira interação da pessoa */
-function primeiroToque(evento) {
-if (somLiberado || !tocarSozinho || !controladorSpotify) {
+/* qualquer clique, toque ou tecla liga a música aberta, se ela estiver parada */
+function aoInteragir(evento) {
+if (!tocarSozinho || !cartaoCentral || estaTocando()) {
 return
 }
 
-if (evento.target.closest && evento.target.closest(".tocar, .apagar, a, #player")) {
+if (evento.key === "ArrowLeft" || evento.key === "ArrowRight") {
 return
 }
 
-retomar()
+if (evento.target.closest && evento.target.closest(".tocar, .apagar, a, #player, .musica:not(.central)")) {
+return
 }
 
-document.addEventListener("pointerdown", primeiroToque)
-document.addEventListener("keydown", primeiroToque)
+if (Date.now() - ultimaTentativa < 700) {
+return
+}
+
+tocarCentral()
+}
+
+document.addEventListener("pointerup", aoInteragir)
+document.addEventListener("touchend", aoInteragir)
+document.addEventListener("keydown", aoInteragir)
 
 /* clicar em um cartão do lado abre aquela música */
 listaMusicas.addEventListener("click", (evento) => {
@@ -295,15 +374,15 @@ atualizarCentro()
 botaoFecharPlayer.addEventListener("click", () => {
 tocarSozinho = false
 clearTimeout(esperaParaTocar)
+clearInterval(vigia)
 
 if (controladorSpotify) {
 controladorSpotify.pause()
 }
 
 player.classList.remove("aberto")
-avisoSom.classList.remove("visivel")
-document.body.classList.remove("tocando")
-window.musicaTocando = false
+esconderAviso()
+marcarTocando(false)
 })
 
 document.addEventListener("keydown", (evento) => {
